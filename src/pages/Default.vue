@@ -22,7 +22,7 @@
                     </v-alert>
                     <v-form v-model="valid" ref="form" lazy-validation>
                         <v-select label="Periode" v-model="login.periode" :items="periodItems" :rules="[v => !!v || 'Item is required']" required append-icon="mdi-arrow-down-drop-circle-outline"></v-select>
-                        <v-text-field label="Name" v-model="login.username" :rules="nameRules" append-icon="mdi-account-circle" :counter="10" required></v-text-field>
+                        <v-text-field label="Name" v-model="login.uname" :rules="nameRules" append-icon="mdi-account-circle" :counter="10" required></v-text-field>
                         <v-text-field name="input-10-2" label="Enter your password" hint="At least 8 characters" min="8" :append-icon="e2 ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"      :append-icon-cb="() => (e2 = !e2)" class="input-group--focused" :type="e2 ? 'password' : 'text'" v-model="login.password"></v-text-field>
                         <v-select label="Peran User" v-model="login._role" :items="roleItems" :rules="[v => !!v || 'Item is required']" required append-icon="mdi-arrow-down-drop-circle-outline"></v-select>
                         <v-btn @click="submit(login)" :disabled="!valid">submit</v-btn>
@@ -80,21 +80,23 @@ export default {
     methods: {
       submit (dataLogin) {
         if (this.$refs.form.validate()) {
-            // console.log(dataLogin)
-            axios.post('http://localhost:3456/user/authenticate', dataLogin)
+            console.log(dataLogin)
+            axios.post('http://localhost:4567/user/authenticate', dataLogin)
                 .then(response => {
-                    // console.log(response.data)
+                    console.log(response.data)
                     var res = response.data
-                    if (res.error === true) {
+                    if (res.success === false) {
                         this.alert = true
-                        this.alertMsg = res.msg
+                        this.alertMsg = res.message
                     } else {
                         this.alert = false
-                        localStorage.setItem('token', res.token)
-                        localStorage.setItem('role', dataLogin._role)
-                        localStorage.setItem('user', dataLogin.username)
+                        sessionStorage.setItem('token', res.token)
+                        sessionStorage.setItem('role', dataLogin._role)
+                        sessionStorage.setItem('user', dataLogin.uname)
+                        // sessionStorage.setItem('_id', dataLogin.uname)
+                        this.$store.dispatch('setUser', dataLogin.uname)
                         this.$router.push('/dashboard')
-                        this.$store.dispatch('setUser', dataLogin.username)
+                        
                     }
                 })
                 .catch(error=> {
@@ -103,12 +105,7 @@ export default {
                         this.alertMsg = 'Maaf. Sedang tidak terhubung ke Server.'
                     }
                 })
-            // if (this.name === 'Culip' && this.email === 'culip@culip.co') {
-            //     this.$router.push('/dashboard')
-            // } else {
-            //     alert('Maaf Data Anda tidak benar. Coba ulangi lagi!')
-            //     return false
-            // }
+            
         }
       },
       clear () {
@@ -161,7 +158,7 @@ export default {
             background:
                 color: orange
             #so-content
-                padding: 20px
+                //padding: 20px
                 width: 100%
                 
 </style>

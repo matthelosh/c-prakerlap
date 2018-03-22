@@ -6,6 +6,7 @@ import store from './store/index'
 import Vuetify from 'vuetify'
 import Vuex from 'vuex'
 import 'vuetify/dist/vuetify.css'
+import 'material-icons/css/material-icons.css'
 import 'mdi/css/materialdesignicons.css'
 import 'font-awesome/css/font-awesome.css'
 
@@ -15,6 +16,6 @@ new Vue({
   el: '#app',
   store,
   router,
-  // store,
+  store,
   render: h => h(App)
 })

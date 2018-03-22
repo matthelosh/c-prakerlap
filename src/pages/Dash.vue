@@ -46,33 +46,19 @@
       <v-btn icon @click.stop="logout">
         <v-icon>fa-sign-out</v-icon>
       </v-btn>
-      <v-btn icon @click.stop="rightDrawer = !rightDrawer">
+      <!-- <v-btn icon @click.stop="rightDrawer = !rightDrawer">
         <v-icon>fa-bars</v-icon>
-      </v-btn>
+      </v-btn> -->
     </v-toolbar>
     <v-content>
       <v-container fluid>
-        <v-layout column align-center>
+        <v-layout column>
           
           <router-view></router-view>
         </v-layout>
       </v-container>
     </v-content>
-    <v-navigation-drawer
-      temporary
-      :right="right"
-      v-model="rightDrawer"
-      fixed
-    >
-      <v-list>
-        <v-list-tile @click.native="right = !right">
-          <v-list-tile-action>
-            <v-icon>compare_arrows</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-title>Switch drawer (click me)</v-list-tile-title>
-        </v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
+    
   </div>
 </template>
 
@@ -81,9 +67,10 @@
   export default {
     data () {
       return {
-        clipped: true,
-        drawer: false,
+        clipped: false,
+        drawer: true,
         fixed: true,
+        miniVariant: true,
         items: [
           { icon: 'mdi-home', title: 'Beranda', role: '1', linkTo: '/dashboard' },
           { icon: 'mdi-settings', title: 'Pengaturan', role: '1', linkTo: '/dashboard/settings' },
@@ -94,31 +81,36 @@
           { icon: 'mdi-file-document', title: 'Dokumen Penting', role: '1', linkTo: '/dashboard/dokumen' },
           { icon: 'mdi-calendar-text', title: 'Jurnal Praktikam', role: '1', linkTo: '/dashboard/jurnals' },
           { icon: 'mdi-lead-pencil', title: 'Tulis Artikel', role: '1', linkTo: '/dashboard/artikel' },
-          { icon: 'fa-cogs', title: 'Pengaturan', role: '2', linkTo: '/about' },
-          { icon: 'fa-cogs', title: 'Pengaturan', role: '2', linkTo: '/about' },
-          { icon: 'fa-cogs', title: 'Pengaturan', role: '2', linkTo: '/about' },
-          { icon: 'fa-cogs', title: 'Pengaturan', role: '2', linkTo: '/about' },
-          { icon: 'fa-cogs', title: 'Pengaturan', role: '2', linkTo: '/about' },
-          { icon: 'fa-cogs', title: 'Pengaturan', role: '2', linkTo: '/about' },
+          { icon: 'fa-id-card-o', title: 'Profil', role: '2', linkTo: '/guru/profil' },
+          { icon: 'fa-calendar', title: 'Jadwal', role: '2', linkTo: '/guru/jadwal' },
+          { icon: 'fa-tv', title: 'Monitoring', role: '2', linkTo: '/guru/monitoring' },
+          { icon: 'fa-file', title: 'Berkas Penting', role: '2', linkTo: '/guru/file' },
+          { icon: 'fa-table', title: 'Jurnal Praktikan', role: '2', linkTo: '/guru/jurnal' }
+          
         ],
-        miniVariant: false,
-        right: true,
+        
+        right: false,
         rightDrawer: false,
         title: 'Prakerlap SMKN 10 Malang',
-        role: localStorage.getItem('role')
+        role: sessionStorage.getItem('role')
       }
     },
     beforeCreate() {
-      var token = localStorage.getItem('token')
+      var token = sessionStorage.getItem('token')
       if ( !token ) {
         alert('Anda tidak berhak masuk. Silahkan login dulu!')
         this.$router.push('/')
       }
     },
     mounted () {
-      setInterval(function(){
-          tokenService.cekToken();
-        }, 5000);
+      if(this.$router.path == '/'){
+        return false;
+      } else {
+        var self = this;
+        setInterval(function(){
+            self.cekToken();
+          }, 5000);
+      }
     },
     methods: {
       logout() {
@@ -126,14 +118,49 @@
         if(!out) {
           return false
         } else {
-          localStorage.removeItem('token')
-        this.$router.push('/')
+          sessionStorage.removeItem('token');
+          sessionStorage.removeItem('_id');
+          sessionStorage.removeItem('user');
+          sessionStorage.removeItem('role');
+          this.$router.push('/');
+        }
+      },
+      cekToken(){
+        // console.log(this.$router.history.current.path);
+        var self = this;
+        var token = sessionStorage.getItem("token");
+        if(token == null){
+          if(this.$router.history.current.path == '/') {
+            return false;
+          } else {
+            this.$router.push('/');
+            sessionStorage.removeItem("isLoggedIn");
+          }
+        } else {
+          self.parseJwt = function(token){
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace('-', '+').replace('_', '/');
+            return JSON.parse(window.atob(base64));
+          }
+          var expTime = self.parseJwt(token);
+          var timeStamp = Math.floor(Date.now()/1000);
+
+          var timeCheck = expTime.exp - timeStamp;
+          console.log(timeCheck);
+          if(timeCheck <= 0) {
+            alert('Maaf! Token Anda habis. Silahkan Login kembali');
+            sessionStorage.removeItem("isLoggedIn");
+            sessionStorage.removeItem("token");
+            window.location.href='/';
+
+
+          }
         }
       }
     },
     computed: {
       userFoto() {
-        var file = this.$store.state.user[0]._id,
+        var file = sessionStorage.getItem('_id'),
             foto = '/public/user-profiles/'+file+'.jpg'
         return foto
 

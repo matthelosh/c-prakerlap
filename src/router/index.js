@@ -8,9 +8,9 @@ Vue.use(Router)
 function load (component) {
   return () => System.import(`@pages/${component}.vue`)
 }
-export default new Router({
-  mode: 'history',
-  base: '/',
+var router = new Router({
+  // mode: 'history',
+  // base: '/',
   routes: [
     {
       path: '/',
@@ -35,8 +35,56 @@ export default new Router({
         {
           path: '/dashboard/settings',
           component: load('dash/Settings')
+        },
+        {
+          path: '/dashboard/dudi',
+          component: load('dash/Dudi')
+        },
+        {
+          path: '/dashboard/guru',
+          component: load('dash/Pembimbing')
+        },
+        {
+          path: '/dashboard/praktikan',
+          component: load('dash/Praktikan')
+        },
+        {
+          path: '/dashboard/statistik',
+          component: load('dash/Statistik')
+        },
+        {
+          path: '/guru/profil',
+          component: load('guru/Profile')
+        },
+        {
+          path: '/guru/jadwal',
+          component: load('guru/Jadwal')
+        },
+        {
+          path: '/guru/monitoring',
+          component: load('guru/Monitoring')
+        },
+        {
+          path: '/guru/file',
+          component: load('guru/Berkas')
+        },
+        {
+          path: '/guru/jurnal',
+          component: load('guru/Jurnal')
         }
+
       ]
+    },
+    {
+      path: '*',
+      component: load('404')
     }
   ]
 })
+export default router;
+
+// { icon: 'fa-user', title: 'Profil', role: '2', linkTo: '/guru/profil' },
+//           { icon: 'fa-calendar', title: 'Jadwal', role: '2', linkTo: '/guru/jadwal' },
+//           { icon: 'fa-tv', title: 'Monitoring', role: '2', linkTo: '/guru/monitoring' },
+//           { icon: 'fa-file', title: 'Berkas Penting', role: '2', linkTo: '/guru/file' },
+//           { icon: 'fa-table', title: 'Jurnal Praktikan', role: '2', linkTo: '/guru/jurnal' }

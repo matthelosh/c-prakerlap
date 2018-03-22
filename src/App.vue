@@ -1,12 +1,12 @@
 <template>
   <v-app>
-    <v-content>
+    <!-- <v-content> -->
       <transition name="page" mode="out-in">
         <router-view></router-view>
       </transition>
-    </v-content>
-    <v-footer :fixed="fixed" app>
-      <span>&copy; 2017</span>
+    <!-- </v-content> -->
+    <v-footer :fixed="fixed" app bottom>
+      <span>&copy; 2017 <a href="mailto:matthelosh@gmail.com">Mat Helosh</a></span>
     </v-footer>
   </v-app>
 </template>
@@ -15,7 +15,8 @@
   export default {
     data () {
       return {
-       fixed: true
+       fixed: false,
+       clipped: false
       }
     }
   }

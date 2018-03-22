@@ -1,6 +1,7 @@
 <template>
   <div class="dash-home">
       <h1>Home</h1>
+      <v-icon>mi-android</v-icon>
       <h4>{{text}}</h4>
   </div>
 </template>
