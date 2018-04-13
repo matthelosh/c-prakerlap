@@ -3,8 +3,11 @@
     br
     v-layout(row)
       v-flex(xs3 offset-xs1)
-        v-card(hover)
+        v-card(hover @hover="showEdit")
+          
           v-card-media(:src="foto" height="200px")
+            v-btn(color="pink" fab right absolute dark flat v-show="offerEdit")
+              v-icon mdi-account-edit
           v-card-title(primary-title)
             div
               h3.headline.mb-0 {{user.nama}}
@@ -22,17 +25,6 @@
                 v-list-tile-sub-title {{dudi.alamat}}
                 v-list-tile-sub-title {{dudi.kota}}
             v-divider
-          //-   v-list-tile(avatar)
-          //-     v-list-tile-avatar
-          //-       v-icon(class="grey darken-1 white--text")
-          //-         i.fa.fa-building
-          //-     v-list-tile-content
-          //-       //- v-list-tile-sub-title Judul
-          //-       //- v-list-tile-title {{ dudi.alamat }}
-          //-       //- v-list-tile-sub-title {{ dudi.kota }}
-          //-     v-list-tile-action
-          //-       v-btn(icon ripple)
-          //-         v-icon(color="grey lighten-1") fa-info
                 
 </template>
 
@@ -47,6 +39,7 @@ export default {
       user: {},
       foto : '',
       dudis:[],
+      offerEdit: false,
       // items: [
       //     { icon: 'fa-building fa-2x', iconClass: 'grey lighten-1 white--text', title: 'Photos', subtitle: 'Jan 9, 2014' },
       //     { icon: 'folder', iconClass: 'grey lighten-1 white--text', title: 'Recipes', subtitle: 'Jan 17, 2014' },
@@ -69,13 +62,16 @@ export default {
            });
     },
     getMyDudi() {
-            var self = this;
-            var id = sessionStorage.getItem("_id");
-            axios.get('http://localhost:4567/api/getmydudis?id='+id, {headers: {'X-Access-Token': self.token}})
-                .then(function(res){
-                    self.dudis = res.data;
-                });
-        }
+        var self = this;
+        var id = sessionStorage.getItem("_id");
+        axios.get('http://localhost:4567/api/getmydudis?id='+id, {headers: {'X-Access-Token': self.token}})
+            .then(function(res){
+                self.dudis = res.data;
+            });
+    },
+    showEdit(){
+      this.offerEdit = true;
+    }
   },
   computed: {
     // foto(){

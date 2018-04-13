@@ -49,8 +49,12 @@ var router = new Router({
           component: load('dash/Praktikan')
         },
         {
-          path: '/dashboard/statistik',
-          component: load('dash/Statistik')
+          path: '/dashboard/prakerlap',
+          component: load('dash/Prakerlap')
+        },
+        {
+          path: '/dashboard/info',
+          component: load('dash/Info')
         },
         {
           path: '/guru/profil',
@@ -71,6 +75,18 @@ var router = new Router({
         {
           path: '/guru/jurnal',
           component: load('guru/Jurnal')
+        },
+        {
+          path: '/praktikan/profil',
+          component: load('praktikan/Profil')
+        },
+        {
+          path: '/praktikan/jurnal',
+          component: load('praktikan/Jurnal')
+        },
+        {
+          path: '/praktikan/pengaduan',
+          component: load('praktikan/Pengaduan')
         }
 
       ]

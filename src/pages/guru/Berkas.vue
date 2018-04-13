@@ -35,7 +35,7 @@
         v-flex(xs1 offset-xs1)
             v-btn(color="success" @click.stop="getSiswas()")
                 i.fa.fa-search
-            <v-btn color="info" @click.stop="print" v-if="select.val == 'monitoring' || select.val == 'permohonan' || select.val == 'srt_antar' || select.val == 'ba_antar'"><i class="fa fa-print"></i></v-btn>
+            <v-btn color="info" @click.stop="print" v-if="select.val == 'monitoring' || select.val == 'permohonan' || select.val == 'srt_antar' || select.val == 'ba_antar' || select.val == 'lamp_permohonan'"><i class="fa fa-print"></i></v-btn>
 
     br
     .sheet(v-if="select.val == 'default'")
@@ -91,7 +91,7 @@
                     v-card-text 
                         p sLorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus quae consectetur reiciendis. Dolores veniam eligendi fugiat, iure distinctio accusamus adipisci? Numquam minus quisquam veniam illo consectetur enim asperiores nesciunt consequatur!
 
-    .sheet(v-if="select.val == 'permohonan' || select.val == 'srt_antar' || select.val == 'ba_antar'")
+    .sheet(v-if="select.val == 'permohonan' || select.val == 'srt_antar' || select.val == 'ba_antar'" )
         //- <v-btn color="info" @click.stop="print"><i class="fa fa-print"></i>&nbsp; Cetak</v-btn>
         
         div.lembar.print
@@ -252,8 +252,9 @@
                                 td : {{selDudi.namaDudi}}
                         br
                         p(style="text-indent:0!important; ") Demikian surat tugas ini dibuat untuk dilaksanakan sebaik-baiknya dan dengan penuh tanggung jawab.
-
-                    
+        
+                        br
+                        br
                 v-layout.ttd(row)
                     v-flex.note(xs8 v-if="select.val == 'permohonan' || select.val == 'srt_antar'")
                         div(v-if="select.val == 'permohonan'")
@@ -293,9 +294,9 @@
 
 
                 v-layout.kaki(row v-if="select.val !== 'ba_antar'")
-                    v-flex(xs7)
+                    v-flex(xs6)
                         p Teknik Kendaraan Ringan, Teknik Ototronika, Teknik dan Bisnis Sepeda Motor, Teknik Komputer dan Jaringan, Multimedia
-                    v-flex(xs5)
+                    v-flex(xs6)
                         .foot-logo.text-xs-center
                             img(src="/public/img/ahm.png")
                             img(src="/public/img/10.jpg")
@@ -308,12 +309,21 @@
             br(v-if="select.val == 'permohonan' || select.val == 'srt_antar'")
             br(v-if="select.val == 'permohonan' || select.val == 'srt_antar'")
             br(v-if="select.val == 'permohonan' || select.val == 'srt_antar'")
+            //- br(v-if="select.val == 'permohonan' || select.val == 'srt_antar'")
+            //- br(v-if="select.val == 'permohonan' || select.val == 'srt_antar'")
+            //- br(v-if="select.val == 'permohonan' || select.val == 'srt_antar'")
+            //- br(v-if="select.val == 'permohonan' || select.val == 'srt_antar'")
+            //- div.page-spacer(v-if="select.val == 'permohonan' || select.val == 'srt_antar'")
+
             //- br(v-if="select.val == 'permohonan'")
             //- br(v-if="select.val == 'permohonan'")
             //- br(v-if="select.val == 'permohonan'")
             //- br(v-if="select.val == 'permohonan'")
             
-            article#lamp_permohonan(xs8 offset-xs2 v-if="select.val == 'permohonan'")
+    .sheet(v-if="select.val == 'lamp_permohonan'")
+        .lembar.print#lamp_permohonan
+            //- .v-layout(row)
+            v-flex(xs12)
                 v-layout.hal.kop(row)
                     v-flex(xs1)
                         p No    
@@ -346,13 +356,13 @@
                             td : ........................................................
                         tr
                             td Nama perusahaan/instansi
-                            td : ...........................................................
+                            td : ........................................................
                         tr
                             td Alamat perusahaan/instansi
-                            td : ...........................................................
+                            td : ........................................................
                         tr
                             td Nomor telp
-                            td : ...........................................................
+                            td : ........................................................
                     br
                     v-flex(xs10 offset-xs1)
                         p Sehubungan dengan permohonan Saudara tanggal ................................... tentang permohonan untuk Praktek Kerja Lapangan (Prakerlap), maka dengan ini kami memutuskan : (*menerima/tidak menerima) permohonan Saudara.
@@ -477,6 +487,7 @@ export default {
             { text: 'Pilih Berkas', val: 'default' }, 
             { text: 'Monitoring', val: 'monitoring' },
             { text: 'Surat Permohonan', val: 'permohonan' },
+            { text: 'Lamp. Surat Permohonan', val: 'lamp_permohonan' },
             { text: 'Surat Tugas Pengantaran', val: 'srt_antar' },
             { text: 'Berita Acara Pengantaran', val: 'ba_antar' },
         ],
@@ -633,12 +644,12 @@ export default {
         margin: 20px auto;
         box-sizing: border-box;
     }
-    #lamp_permohonan{
+    /*#lamp_permohonan{
         margin-top: 0;
         background: #eee;
+        padding-top: 100px;
        
-       
-    }
+    }*/
     .print .kop p, .print .kop h1, .print .kop h3, .print .hal p {
         margin: 0 auto;
     }
@@ -684,17 +695,18 @@ export default {
         box-sizing: border-box;
         padding-top: 5px;
         margin-right: 50px;
+        margin-top: 20px;
     }
     .kaki p{
         font-size: 8pt;
         /* line-height: 10pt; */
         background: #143e8d;
         color: #fff;
-        padding: 5px;
+        padding: 3px;
        
     }
     .foot-logo{
-        margin-left: 3px;
+        margin-left: 2px;
     }
     .foot-logo img{
         height: 30px;
@@ -728,6 +740,11 @@ export default {
     .malang{
         margin-right: 30%;
     }
+    .page-spacer{
+        height: 200px;
+        position: relative;
+        background: pink;
+    }
     @media print{
         .no-print{
             display: none;
@@ -739,7 +756,7 @@ export default {
         .kode-pos{
             margin-right: 5px;
         }
-        .print, .lembar-monitoring{
+        .print, .lembar-monitoring, #lamp_permohonan{
             display: block;
             background: #fff;
             position: absolute;
@@ -750,8 +767,12 @@ export default {
             z-index: 10000;
             width: 100%;
             height: 100%;
+            min-height: 100%;
             padding: 0!Important;
             margin: 0;
+        }
+        body, html{
+            height: 100%;
         }
         .logo-surat{
              width: 75px;

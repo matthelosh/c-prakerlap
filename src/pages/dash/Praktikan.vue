@@ -1,24 +1,36 @@
 <template lang="pug">
   div
     v-layout(row)
-      v-flex(xs12)
-        v-card
-          v-btn(color="primary" flat @click.native="dialog=true") 
-            i.fa.fa-child
-            | Tambah Praktikan
-          v-btn(color="success" @click.native="cetak_data" flat)
-            i.fa.fa-print
-            | &nbsp; Cetak
-          v-btn(color="warning" @click.native="export_xls" flat)
-            i.fa.fa-table
-            | &nbsp; Export
+      v-flex(xs6)
+        v-btn(color="primary" flat @click.native="[dialog=true, add=true]") 
+          i.fa.fa-child
+          | &nbsp; Tambah Praktikan
+        v-btn(color="teal" @click.native="cetak_data" flat)
+          i.fa.fa-print
+          | &nbsp; Cetak
+        v-btn(color="warning" @click.native="export_xls" flat)
+          v-icon mdi-file-excel-box
+          | &nbsp; Export
+      v-flex(xs2)
+        input(type="file" ref="fileUpload" @change="onFilePicked" style="display:none")
+  
+        v-text-field(@click.native="pickFile" color="green" flat append-icon="mdi-attachment" label="Pilih file Excel" v-model="filename")
+          v-icon mdi-file-excel-box
+          | &nbsp; Import XLS
+      v-flex(xs2)
+        v-btn(color="blue" flat @click.native="import_xls")
+          v-icon mdi-file-import
+          | &nbsp; Import
+      //- <vue-xlsx-table @on-select-file="handleSelectedFile"></vue-xlsx-table>
+    v-layout(row)
+      #tes
     v-layout(row)
       v-flex(xs-12)
         v-card
           v-card-title
             h4 Data Praktikan
             v-spacer
-            v-text-field.no-print(append-icon="search" label="Pencarian" single-line hide-details v-model="search")
+            v-text-field.no-print(append-icon="fa fa-search" label="Pencarian" single-line hide-details v-model="search")
             <v-dialog v-model="dialog" max-width="500px">
               //- <!-- <v-btn color="primary" dark slot="activator" class="mb-2">New Item</v-btn> -->
               <v-card>
@@ -47,12 +59,12 @@
                       <v-flex xs12 sm6 md4>
                         <v-text-field label="No. HP" v-model="editedSiswa.hp"></v-text-field>
                       </v-flex>
-                      <v-flex xs12 sm8 md8>
-                        <v-select append-icon="fa fa-angle-down" v-bind:items="gurus" v-model="selGuru" label="Pilih Guru" item-text="nama" item-value="_id" return-object :hint="`${selGuru.nama}, ${selGuru._id}`" input="selGuru._id" persistent-hint autocomplete></v-select>
-                      </v-flex>
-                      <v-flex xs12 sm12 md12>
-                        <v-select append-icon="fa fa-angle-down" v-bind:items="dudis" v-model="selDudi" label="Pilih Dudi" item-text="namaDudi" item-value="_id" return-object :hint="`${selDudi.namaDudi}, ${selDudi._id}`" input="selDudi._id" persistent-hint autocomplete ></v-select>
-                      </v-flex>
+                      //- <v-flex xs12 sm8 md8>
+                      //-   <v-select append-icon="fa fa-angle-down" v-bind:items="gurus" v-model="editedSiswa._guru" label="Pilih Guru" item-text="nama" item-value="_id" return-object :hint="`${selGuru.nama}, ${selGuru._id}`" input="selGuru._id" persistent-hint autocomplete v-bind:value="editedSiswa._guru"></v-select>
+                      //- </v-flex>
+                      //- <v-flex xs12 sm12 md12>
+                      //-   <v-select append-icon="fa fa-angle-down" v-bind:items="dudis" v-model="editedSiswa._dudi" label="Pilih Dudi" item-text="namaDudi" item-value="_id" return-object :hint="`${selDudi.namaDudi}, ${selDudi._id}`" input="selDudi._id" persistent-hint autocomplete v-bind:value="editedSiswa._dudi"></v-select>
+                      //- </v-flex>
                       
 
                     </v-layout>
@@ -60,13 +72,14 @@
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" flat @click.native="close">Cancel</v-btn>
-                  <v-btn color="blue darken-1" flat @click.native="save">Save</v-btn>
+                  <v-btn color="blue darken-1" flat @click.native="close">Batal</v-btn>
+                  <v-btn color="blue darken-1" flat @click.native="save" v-if="add">Simpan</v-btn>
+                  <v-btn color="blue darken-1" flat @click.native="update" v-if="!add">Perbarui</v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
           #printableTable
-            v-data-table#tbl_praktikan(:headers="headers" :items="siswas" :search="search" sort-icon="fa fa-sort" next-icon="fa fa-angle-double-right" prev-icon="fa fa-angle-double-left")
+            v-data-table#tbl_praktikan(:headers="headers" :items="siswas" :search="search" sort-icon="fa fa-sort" next-icon="fa fa-angle-double-right" prev-icon="fa fa-angle-double-left" loading="true")
                   template(slot="items" slot-scope="props")
                     td {{ props.index+1 }}
                     td.text-xs-center {{ props.item._id}}
@@ -74,13 +87,14 @@
                     td.text-xs-left {{ props.item.kelas }}
                     td.text-xs-left {{ props.item.progli }}
                     td {{ props.item.hp }}
-                    td 
-                      span(v-if="props.item._dudi == null || props.item._dudi == '' || props.item._dudi == '0'") Belum ditempatkan
-                      span(v-else) {{ props.item._dudi.namaDudi }}
-                    td 
-                      span(v-if="props.item._guru == null || props.item._guru == '' || props.item._guru == '0'") Kosong
-                      span(v-else) {{ props.item._guru.nama}}
+                    //- td 
+                    //-   span(v-if="props.item._dudi == null || props.item._dudi == '' || props.item._dudi == '0'|| props.item._dudi === false") {{ props.item._dudi == 'Kosong'}}
+                    //-   span(v-else) {{ props.item._dudi.namaDudi }}
+                    //- td 
+                    //-   span(v-if="props.item._guru == null || props.item._guru == '' || props.item._guru == '0'|| props.item._guru === false") Kosong
+                    //-   span(v-else) {{ props.item._guru.nama}}
                     td.justify-center.layout.px-0
+
                       v-btn(icon class="mx-0" @click.native="editItem(props.item)")
                         v-icon(color="teal" ) fa-pencil
                           
@@ -95,9 +109,17 @@
 
 <script>
 import axios from 'axios'
+// import XLSX from 'xlsx'
 export default {
+  // components:{fileInput},
   data() {
     return {
+      formData:'',
+      file: '',
+      fileUrl: '',
+      filename: '',
+      selSiswa: [],
+      add: '',
       selDudi: { namaDudi: 'Pilih Dudi', _id: 'default'},
       selGuru: { nama: 'Pilih Guru', _id: 'default'},
       dialog: false,
@@ -115,8 +137,8 @@ export default {
         nama: '',
         progli: '',
         hp: '',
-        _dudi: '',
-        _guru: '',
+        // _dudi: {},
+        // _guru: {},
         _role: '3'
       },
       defaultSiswa: {
@@ -128,8 +150,8 @@ export default {
         nama: '',
         progli: '',
         hp: '',
-        _dudi: '',
-        _guru: '',
+        // _dudi: {},
+        // _guru: {},
         _role: '3'
       },
       dudis:[],
@@ -148,11 +170,13 @@ export default {
           { text: 'Kelas', value: 'kelas' },
           { text: 'Progli', value: 'progli' },
           { text: 'No. HP', sortable: false, value: 'hp' },
-          { text: 'Dudi', sortable: false, value: '_dudi.namaDudi' },
-          { text: 'Pembimbing', sortable: true, value: '_guru.nama' },
+          // { text: 'Dudi', sortable: false, value: '_dudi.namaDudi' },
+          // { text: 'Pembimbing', sortable: true, value: '_guru.nama' },
           { text: 'Aksi', sortable: false, value: '_id' }
-      ]
+      ],
+      newSiswas: []
     }
+    
   },
   created(){
     this.getSiswas();
@@ -185,6 +209,17 @@ export default {
     editItem (item) {
         this.editedIndex = this.siswas.indexOf(item)
         this.editedSiswa = Object.assign({}, item)
+        // this.selDudi._id = this.editedSiswa._dudi._id;
+        if (item._dudi == null){
+          this.editedSiswa._dudi = '0'
+          this.selDudi._id = 'default';
+          this.selDudi.namaDudi = 'Pilih Dudi';
+        }
+        if (item._guru == null) {
+          this.editedSiswa._guru = '0'
+          this.selGuru._id = 'default';
+          this.selGuru.nama = 'Pilih Guru';
+        }
         this.selDudi._id = this.editedSiswa._dudi._id;
         this.selDudi.namaDudi = this.editedSiswa._dudi.namaDudi;
         this.selGuru._id = this.editedSiswa._guru._id;
@@ -196,8 +231,15 @@ export default {
 
     deleteItem (item) {
       const index = this.siswas.indexOf(item)
-      confirm('Yakin Menghapus Du/Di ini?') && this.dudis.splice(index, 1)
-      // alert('hapue');
+      confirm('Yakin Menghapus Siswa: '+ item.nama+' ini?') 
+      // && this.siswas.splice(index, 1)
+      var self = this;
+      var data = {_id: item._id};
+      axios.post('http://localhost:4567/api/delsiswa', data, {headers: {'X-Access-Token': self.token}}). then((res) => {
+        if(res.data == 'ok_del'){
+          self.close();
+        }
+      });
     },
     getSiswas(){
       var self = this;
@@ -205,11 +247,6 @@ export default {
            .then((res) => {
             self.siswas = res.data;
             var data = res.data;
-            // var i = 0;
-            // for(i=0; i < data.length; i++ ) {
-            //   self.dudis.push(data[i]._dudi);
-            //   self.gurus.push(data[i]._guru);
-            // }
            });
     },
     cetak_data(){
@@ -254,17 +291,6 @@ export default {
 
           return (sa);
     },
-    // toggleEdit(ev, id){
-    //   // this.editable = !this.editable;   
-    //   id.$set('editable', !id.editable);
-        
-    //     // Focus input field
-    //     if(id.editable){
-    //         Vue.nextTick(function() {
-    //       ev.$$.input.focus();
-    //     });   
-    //     }
-    // },
     close () {
         this.dialog = false
         setTimeout(() => {
@@ -272,10 +298,78 @@ export default {
           this.selDudi = Object.assign({_id: 'Default', namaDudi: 'Pilih Dudi'})
           this.selGuru = Object.assign({_id: 'Default', nama: 'Pilih Guru'})
           this.editedIndex = -1
+          this.add = false;
+          this.getSiswas();
+          this.getDudis();
+          this.getGurus();
         }, 300)
     },
     save () {
-      alert('hi');
+      var self = this;
+      var data = self.editedSiswa;
+      axios.post('http://localhost:4567/api/newsiswa', data, {headers: {'X-Access-Token': self.token}})
+          .then((res) => {
+            if (res.data == 'ok_save'){
+              self.close();
+            }
+          });
+    },
+    update () {
+      var self = this;
+      var data = self.editedSiswa;
+      axios.put('http://localhost:4567/api/siswa', data, {headers: {'X-Access-Token': self.token}})
+          .then((res) => {
+            if ( res.data == 'ok_upd') {
+              self.close();
+            }
+          });
+    },
+    // update_all() {
+    //   var self = this;
+    //   var data = self.siswas;
+    //   axios.put('http://localhost:4567/api/updallsiswas', data, {headers: {'X-Access-Token': self.token}})
+    //       .then((res) => {
+    //         console.log(res);
+    //       });
+    // },
+    pickFile(){
+      this.$refs.fileUpload.click();
+    },
+    onFilePicked(event){
+      var files = event.target.files;
+      let filename = files[0].name;
+      this.filename = filename;
+      const fileReader = new FileReader();
+      fileReader.addEventListener('load', () => {
+        this.fileUrl = fileReader.result;
+      });
+      fileReader.readAsDataURL(files[0]);
+      this.file = files[0];
+    },
+    import_xls(){
+      var self = this;
+      var url = self.fileUrl;
+
+// /* set up async GET request */
+      var req = new XMLHttpRequest();
+      req.open("GET", url, true);
+      req.responseType = "arraybuffer";
+
+      req.onload = function(e) {
+        var data = new Uint8Array(req.response);
+        var workbook = XLSX.read(data, {type:"array"});
+
+        /* DO SOMETHING WITH workbook HERE */
+        var first_sheet_name = workbook.SheetNames[0];
+        var worksheet = workbook.Sheets[first_sheet_name];
+        var newSiswas = XLSX.utils.sheet_to_json(worksheet);
+        self.newSiswas = newSiswas;
+        axios.post('http://localhost:4567/api/importsiswas', newSiswas, {headers: {'X-Access-Token': self.token}}).then((res)=>{
+          self.getSiswas();
+          self.fileUrl = '';
+        })
+      }
+      req.send();
     }
   },
   computed: {

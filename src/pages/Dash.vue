@@ -10,7 +10,7 @@
       <v-list>
         <v-list-tile 
           value="true"
-          v-for="(item, i) in items"
+          v-for="(item, i) in menus"
           :key="i"
           :to="item.linkTo"
           v-if="item.role == role"
@@ -36,14 +36,20 @@
       <!-- <v-btn icon @click.stop="fixed = !fixed">
         <v-icon>remove</v-icon>
       </v-btn> -->
-      <v-toolbar-title v-text="title"></v-toolbar-title>
+      <v-toolbar-title>
+        <v-avatar tile>
+          <img src="/public/favicon-32x32.svg" alt="" height="24px">
+        </v-avatar>  
+        {{title}}
+      </v-toolbar-title>
       <v-spacer></v-spacer>
+      <strong v-html="username"/>
       <v-btn icon>
         <v-avatar size="32px">
           <img :src="userFoto" alt="Profil">
         </v-avatar>
       </v-btn> 
-      <v-btn icon @click.stop="logout">
+      <v-btn icon @click.stop="logout" color="red" flat title="Keluar">
         <v-icon>fa-sign-out</v-icon>
       </v-btn>
       <!-- <v-btn icon @click.stop="rightDrawer = !rightDrawer">
@@ -64,30 +70,35 @@
 
 <script>
   import tokenService from './../lib/authServices.js'
+  import axios from 'axios'
   export default {
     data () {
       return {
         clipped: false,
         drawer: true,
         fixed: true,
+        menus: [],
         miniVariant: true,
-        items: [
-          { icon: 'mdi-home', title: 'Beranda', role: '1', linkTo: '/dashboard' },
-          { icon: 'mdi-settings', title: 'Pengaturan', role: '1', linkTo: '/dashboard/settings' },
-          { icon: 'mdi-factory', title: 'DU/DI', role: '1', linkTo: '/dashboard/dudi' },
-          { icon: 'mdi-account-multiple', title: 'Pembimbing', role: '1', linkTo: '/dashboard/guru' },
-          { icon: 'mdi-account-multiple-outline', title: 'Praktikan', role: '1', linkTo: '/dashboard/praktikan' },
-          { icon: 'mdi-chart-areaspline', title: 'Statistik', role: '1', linkTo: '/dashboard/statistik' },
-          { icon: 'mdi-file-document', title: 'Dokumen Penting', role: '1', linkTo: '/dashboard/dokumen' },
-          { icon: 'mdi-calendar-text', title: 'Jurnal Praktikam', role: '1', linkTo: '/dashboard/jurnals' },
-          { icon: 'mdi-lead-pencil', title: 'Tulis Artikel', role: '1', linkTo: '/dashboard/artikel' },
-          { icon: 'fa-id-card-o', title: 'Profil', role: '2', linkTo: '/guru/profil' },
-          { icon: 'fa-calendar', title: 'Jadwal', role: '2', linkTo: '/guru/jadwal' },
-          { icon: 'fa-tv', title: 'Monitoring', role: '2', linkTo: '/guru/monitoring' },
-          { icon: 'fa-file', title: 'Berkas Penting', role: '2', linkTo: '/guru/file' },
-          { icon: 'fa-table', title: 'Jurnal Praktikan', role: '2', linkTo: '/guru/jurnal' }
+        // items: [
+        //   { icon: 'mdi-home', title: 'Beranda', role: '1', linkTo: '/dashboard' },
+        //   { icon: 'mdi-settings', title: 'Pengaturan', role: '1', linkTo: '/dashboard/settings' },
+        //   { icon: 'mdi-factory', title: 'DU/DI', role: '1', linkTo: '/dashboard/dudi' },
+        //   { icon: 'mdi-teach', title: 'Pembimbing', role: '1', linkTo: '/dashboard/guru' },
+        //   { icon: 'mdi-worker', title: 'Praktikan', role: '1', linkTo: '/dashboard/praktikan' },
+        //   { icon: 'mdi-folder-outline', title: 'Prakerlap', role: '1', linkTo: '/dashboard/prakerlap' },
+        //   { icon: 'mdi-file-document', title: 'Dokumen Penting', role: '1', linkTo: '/dashboard/dokumen' },
+        //   { icon: 'mdi-calendar-text', title: 'Jurnal Praktikam', role: '1', linkTo: '/dashboard/jurnals' },
+        //   { icon: 'mdi-lead-pencil', title: 'Tulis Info', role: '1', linkTo: '/dashboard/info' },
+        //   { icon: 'fa-id-card-o', title: 'Profil', role: '2', linkTo: '/guru/profil' },
+        //   { icon: 'fa-calendar', title: 'Jadwal', role: '2', linkTo: '/guru/jadwal' },
+        //   { icon: 'fa-tv', title: 'Monitoring', role: '2', linkTo: '/guru/monitoring' },
+        //   { icon: 'fa-file', title: 'Berkas Penting', role: '2', linkTo: '/guru/file' },
+        //   { icon: 'mdi-lead-pencil', title: 'Tulis Info', role: '2', linkTo: '/guru/info' },
+        //   { icon: 'mdi-account-card-details', title: 'Profil', role: '3', linkTo: '/praktikan/profil' },
+        //   { icon: 'mdi-developer-board', title: 'Jurnal Praktikan', role: '3', linkTo: '/praktikan/jurnal' },
+        //   { icon: 'mdi-message', title: 'Pengaduan', role: '3', linkTo: '/praktikan/jurnal' },
           
-        ],
+        // ],
         
         right: false,
         rightDrawer: false,
@@ -96,8 +107,9 @@
       }
     },
     beforeCreate() {
-      var token = sessionStorage.getItem('token')
-      if ( !token ) {
+      // var token = sessionStorage.getItem('token')
+      var isAuth = this.$store.state.isLoggedIn;
+      if ( !isAuth ) {
         alert('Anda tidak berhak masuk. Silahkan login dulu!')
         this.$router.push('/')
       }
@@ -112,16 +124,17 @@
           }, 5000);
       }
     },
+    created(){
+      this.menuitems();
+    },
     methods: {
       logout() {
         var out = confirm('Anda yakin mau keluar?')
         if(!out) {
           return false
         } else {
-          sessionStorage.removeItem('token');
-          sessionStorage.removeItem('_id');
-          sessionStorage.removeItem('user');
-          sessionStorage.removeItem('role');
+          
+          this.$store.dispatch('Unsetuser');
           this.$router.push('/');
         }
       },
@@ -146,16 +159,25 @@
           var timeStamp = Math.floor(Date.now()/1000);
 
           var timeCheck = expTime.exp - timeStamp;
-          console.log(timeCheck);
+          // console.log(timeCheck);
           if(timeCheck <= 0) {
             alert('Maaf! Token Anda habis. Silahkan Login kembali');
             sessionStorage.removeItem("isLoggedIn");
             sessionStorage.removeItem("token");
-            window.location.href='/';
+            this.$router.push('/');
 
 
           }
         }
+      },
+      menuitems() {
+        var self = this;
+        var role = sessionStorage.getItem('role');
+        var token = sessionStorage.getItem("token");
+        axios.get('http://localhost:4567/api/menu/'+role, {headers: {'X-Access-Token' : token}})
+              .then(function(res){
+                self.menus = res.data;
+              });
       }
     },
     computed: {
@@ -164,7 +186,39 @@
             foto = '/public/user-profiles/'+file+'.jpg'
         return foto
 
-      }
+      },
+      username(){
+        return this.$store.state.user.nama;
+      },
+      // menuitems() {
+        // var self = this;
+        // var role = sessionStorage.getItem('role');
+        // axios.get('http://localhost:4567', {headers: {'X-Access-Token' : self.token}})
+        //       .then(function(res){
+        //         console.log(res);
+        //       });
+        // var items =  [
+        //   { icon: 'mdi-home', title: 'Beranda', role: '1', linkTo: '/dashboard' },
+        //   { icon: 'mdi-settings', title: 'Pengaturan', role: '1', linkTo: '/dashboard/settings' },
+        //   { icon: 'mdi-factory', title: 'DU/DI', role: '1', linkTo: '/dashboard/dudi' },
+        //   { icon: 'mdi-teach', title: 'Pembimbing', role: '1', linkTo: '/dashboard/guru' },
+        //   { icon: 'mdi-worker', title: 'Praktikan', role: '1', linkTo: '/dashboard/praktikan' },
+        //   { icon: 'mdi-folder-outline', title: 'Prakerlap', role: '1', linkTo: '/dashboard/prakerlap' },
+        //   { icon: 'mdi-file-document', title: 'Dokumen Penting', role: '1', linkTo: '/dashboard/dokumen' },
+        //   { icon: 'mdi-calendar-text', title: 'Jurnal Praktikam', role: '1', linkTo: '/dashboard/jurnals' },
+        //   { icon: 'mdi-lead-pencil', title: 'Tulis Info', role: '1', linkTo: '/dashboard/info' },
+        //   { icon: 'fa-id-card-o', title: 'Profil', role: '2', linkTo: '/guru/profil' },
+        //   { icon: 'fa-calendar', title: 'Jadwal', role: '2', linkTo: '/guru/jadwal' },
+        //   { icon: 'fa-tv', title: 'Monitoring', role: '2', linkTo: '/guru/monitoring' },
+        //   { icon: 'fa-file', title: 'Berkas Penting', role: '2', linkTo: '/guru/file' },
+        //   { icon: 'mdi-lead-pencil', title: 'Tulis Info', role: '2', linkTo: '/guru/info' },
+        //   { icon: 'mdi-account-card-details', title: 'Profil', role: '3', linkTo: '/praktikan/profil' },
+        //   { icon: 'mdi-developer-board', title: 'Jurnal Praktikan', role: '3', linkTo: '/praktikan/jurnal' },
+        //   { icon: 'mdi-message', title: 'Pengaduan', role: '3', linkTo: '/praktikan/jurnal' },
+          
+        // ];
+        // return items;
+      // }
     }
   }
 </script>

@@ -19,6 +19,7 @@ module.exports = {
       '@pages': path.resolve(__dirname, './src/pages')
     }
   },
+  
   module: {
     rules: [
       {

@@ -1,22 +1,21 @@
-<template>
-  <v-app>
-    <!-- <v-content> -->
-      <transition name="page" mode="out-in">
-        <router-view></router-view>
-      </transition>
-    <!-- </v-content> -->
-    <v-footer :fixed="fixed" app bottom>
-      <span>&copy; 2017 <a href="mailto:matthelosh@gmail.com">Mat Helosh</a></span>
-    </v-footer>
-  </v-app>
+<template lang="pug">
+  v-app
+    transition(name="page" mode="out-in")
+      router-view
+    footer
 </template>
 
 <script>
+  import Footer from './Footer'
   export default {
+    components: {Footer},
+    props: {Footer},
     data () {
       return {
+        
        fixed: false,
-       clipped: false
+       clipped: false,
+       versi: this.$store.state.versi
       }
     }
   }
@@ -29,6 +28,9 @@
   .page-enter, .page-leave-to {
     opacity: 0;
     transform: translateX(-50%);
+  }
+  footer{
+
   }
 
 </style>
