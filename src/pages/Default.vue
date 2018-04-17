@@ -26,6 +26,7 @@
                         <lobby></lobby>
                     </v-flex>
                 </v-layout>
+
             </v-parallax>
         <v-dialog v-model="dialog" persistent max-width="500">
             <v-card>
@@ -49,16 +50,18 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>    
-        .page#so
-            <v-parallax src="/public/landing-bg/parralax.jpg">
-                <v-layout>
-                    #so-content(sm12)
-                        <h1 class="white--text">Struktur Organisasi</h1>
-                        <h4 class="white--text">Eprakerlap SMKN 10 Malang!</h4>
-                        .so-box
-                </v-layout>
-            </v-parallax>
-            
+        <v-footer relative height="auto" color="secondary" dark>
+            <v-layout row wrap justify-center>
+              <v-btn color="teal" flat v-for="link in links" :key="link.href" :href="link.href">
+                |{{ link.label }}
+              </v-btn>
+              <v-flex xs12 py-3 text-xs-center green--text>
+                <v-btn href="https://matthelosh.github.io" flat color="green" small><v-icon  color="green">mdi-github-box</v-icon> <strong>Matthelosh</strong></v-btn><v-btn href="https://twitter.com/mattroji" flat color="green" small><v-icon  color="green">mdi-twitter-box</v-icon> <strong>Mattroji</strong></v-btn><v-btn href="https://facebook.com/matthelosh" flat color="green" small><v-icon  color="green">mdi-facebook-box</v-icon> <strong>Matthelosh</strong></v-btn>
+                <v-spacer></v-spacer>
+                | &copy; 2018 - Matthelosh
+              </v-flex>
+            </v-layout>
+        </v-footer>
 </template>
 <script>
 import axios from 'axios'
@@ -67,7 +70,14 @@ export default {
     components: {Lobby},
     data () {
         return {
-
+            links: [
+                {'label':'Home', 'href': '/#'}, 
+                {'label':'About Us', 'href': '/#about'}, 
+                {'label':'Team', 'href': '/#team'}, 
+                {'label':'Services', 'href': '/#services'}, 
+                {'label':'Blog', 'href': '/#blog'}, 
+                {'label':'Contact Us', 'href': '/#contacus'}
+                ],
             dialog: false,
             valid: true,
             name: '',

@@ -1,4 +1,4 @@
-//- <template lang="pug">
+<template lang="pug">
   div
     v-layout(row dark)
       v-flex(xs6 offset-xs1)

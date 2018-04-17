@@ -9,17 +9,22 @@
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
+    "ajv": "^6.4.0",
+    "ajv-keywords": "^3.1.0",
     "axios": "^0.16.2",
     "font-awesome": "^4.7.0",
     "js-xlsx": "^0.8.22",
+    "material-design-icons": "^3.0.1",
     "material-icons": "^0.1.0",
     "mdi": "^2.2.43",
+    "npm": "^5.8.0",
+    "typeface-roboto": "0.0.54",
     "vue": "^2.5.16",
     "vue-head": "^2.0.12",
     "vue-router": "^3.0.1",
     "vue-xlsx-table": "^1.2.8",
     "vuelidate": "^0.6.2",
-    "vuetify": "^1.0.10",
+    "vuetify": "^1.0.14",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
@@ -27,6 +32,8 @@
     "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.6.0",
     "babel-preset-stage-2": "^6.24.1",
+    "babel-runtime": "^6.26.0",
+    "buble-loader": "^0.5.0",
     "cross-env": "^5.1.4",
     "css-loader": "^0.28.11",
     "file-loader": "^1.1.11",
